@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | CraveHub</title>
+<meta name="description" content="Get in touch with CraveHub — questions, feedback or catering enquiries.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="contact">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="form_section">
+    <div class="form_card" data-aos="fade-up">
+      <div class="center" style="margin-bottom:30px;">
+        <span class="eyebrow">Get In Touch</span>
+        <h2 class="section_heading">Contact Us</h2>
+      </div>
+      <form id="contactForm" novalidate>
+        <div class="form_row">
+          <div class="form_group" id="fg_cname">
+            <label>Name*</label>
+            <input type="text" id="contactName" required>
+            <span class="error_msg">Please enter your name.</span>
+          </div>
+          <div class="form_group" id="fg_cemail">
+            <label>Email*</label>
+            <input type="email" id="contactEmail" required>
+            <span class="error_msg">Please enter a valid email.</span>
+          </div>
+        </div>
+        <div class="form_group" id="fg_csubject">
+          <label>Subject*</label>
+          <input type="text" id="contactSubject" required>
+          <span class="error_msg">Please enter a subject.</span>
+        </div>
+        <div class="form_group" id="fg_cmessage">
+          <label>Message*</label>
+          <textarea id="contactMessage" rows="5" required></textarea>
+          <span class="error_msg">Please enter a message.</span>
+        </div>
+        <button type="submit" class="btn" style="width:100%; justify-content:center;" id="contactSubmitBtn">Send Message</button>
+        <p id="contactStatus" style="font-size:12px; margin-top:12px; text-align:center; color:var(--text-muted);"></p>
+      </form>
+    </div>
+  </section>
+
+  <section style="padding:0 8% 80px;" data-aos="fade-up">
+    <div class="center" style="margin-bottom:24px;">
+      <span class="eyebrow">Find Us</span>
+      <h2 class="section_heading">Visit CraveHub</h2>
+      <hr class="section_divider">
+    </div>
+    <iframe
+      src="https://maps.google.com/maps?q=restaurant&t=&z=13&ie=UTF8&iwloc=&output=embed"
+      width="100%" height="360" style="border:0; border-radius:16px;"
+      allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+      title="CraveHub location map"></iframe>
+    <p style="font-size:11px; color:var(--text-muted); text-align:center; margin-top:10px;">
+      Placeholder map — replace the query in the iframe src with your exact address or Google Maps embed link.
+    </p>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fields = [
+        ['fg_cname', 'contactName'], ['fg_cemail', 'contactEmail'],
+        ['fg_csubject', 'contactSubject'], ['fg_cmessage', 'contactMessage']
+      ];
+      let valid = true;
+      fields.forEach(([groupId, inputId]) => {
+        const group = document.getElementById(groupId);
+        const input = document.getElementById(inputId);
+        const ok = inputId === 'contactEmail'
+          ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)
+          : input.value.trim() !== '';
+        group.classList.toggle('invalid', !ok);
+        if (!ok) valid = false;
+      });
+      if (!valid) return;
+
+      const status = document.getElementById('contactStatus');
+      const btn = document.getElementById('contactSubmitBtn');
+      const payload = {
+        from_name: document.getElementById('contactName').value,
+        from_email: document.getElementById('contactEmail').value,
+        subject: document.getElementById('contactSubject').value,
+        message: document.getElementById('contactMessage').value
+      };
+
+      btn.disabled = true;
+      status.textContent = EMAILJS_CONFIGURED ? 'Sending...' : 'Saving (demo mode)...';
+
+      sendMailNotification('Contact Form', payload)
+        .then(() => {
+          sendAutoReply(payload);
+          status.textContent = EMAILJS_CONFIGURED
+            ? 'Message sent — we\'ll get back to you soon!'
+            : 'Message received! (Demo mode — connect EmailJS in js/mailer.js to send real emails.)';
+          document.getElementById('contactForm').reset();
+          btn.disabled = false;
+        })
+        .catch(() => {
+          status.textContent = 'Something went wrong. Please try again later.';
+          btn.disabled = false;
+        });
+    });
+  </script>
+</body>
+</html>

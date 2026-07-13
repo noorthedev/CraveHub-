@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | CraveHub</title>
+<meta name="description" content="Complete your CraveHub order.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="checkout">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <div class="center" style="padding:50px 8% 0;" data-aos="fade-up">
+    <span class="eyebrow">Almost There</span>
+    <h2 class="section_heading">Checkout</h2>
+    <hr class="section_divider">
+  </div>
+
+  <div class="checkout_grid">
+    <div class="form_card" data-aos="fade-right">
+      <h3 style="margin-bottom:22px;">Customer Information</h3>
+      <form id="checkoutForm" novalidate>
+        <div class="form_row">
+          <div class="form_group" id="fg_name">
+            <label>Full Name*</label>
+            <input type="text" id="custName" required>
+            <span class="error_msg">Please enter your name.</span>
+          </div>
+          <div class="form_group" id="fg_email">
+            <label>Email*</label>
+            <input type="email" id="custEmail" required>
+            <span class="error_msg">Please enter a valid email — your confirmation goes here.</span>
+          </div>
+        </div>
+        <div class="form_group" id="fg_phone">
+          <label>Phone Number*</label>
+          <input type="text" id="custPhone" required>
+          <span class="error_msg">Please enter your phone number.</span>
+        </div>
+        <div class="form_group" id="fg_address">
+          <label>Delivery Address*</label>
+          <textarea id="custAddress" rows="3" required></textarea>
+          <span class="error_msg">Please enter a delivery address.</span>
+        </div>
+
+        <label style="font-size:13px; color:var(--text-muted); margin-bottom:10px; display:block;">Payment Method*</label>
+        <div class="payment_options" id="paymentOptions">
+          <div class="payment_option selected" data-method="Cash on Delivery">
+            <ion-icon name="cash-outline" style="font-size:20px; display:block; margin-bottom:6px;"></ion-icon>
+            Cash on Delivery
+          </div>
+          <div class="payment_option" data-method="Card">
+            <ion-icon name="card-outline" style="font-size:20px; display:block; margin-bottom:6px;"></ion-icon>
+            Credit / Debit Card
+          </div>          <div class="payment_option" data-method="Wallet">
+            <ion-icon name="wallet-outline" style="font-size:20px; display:block; margin-bottom:6px;"></ion-icon>
+            Mobile Wallet
+          </div>
+        </div>
+
+        <button type="submit" class="btn" style="width:100%; justify-content:center; margin-top:10px;">
+          <ion-icon name="checkmark-done"></ion-icon> Place Order
+        </button>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:12px; text-align:center;">
+          Demo checkout — no real payment is processed. Connect a payment gateway (e.g. Stripe) to go live.
+        </p>
+      </form>
+    </div>
+
+    <div class="order_summary" data-aos="fade-left" id="checkoutSummary"></div>
+  </div>
+
+  <div class="popup_overlay" id="orderPopup">
+    <div class="popup_card">
+      <ion-icon name="checkmark-circle"></ion-icon>
+      <h3>Order Placed!</h3>
+      <p id="orderPopupText">Thank you for your order. It's being prepared and will be on its way shortly.</p>
+      <a href="index.html" class="btn" style="width:100%; justify-content:center;">Back to Home</a>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    // Optional: paste a Stripe Payment Link (Dashboard → Payment Links, no backend needed)
+    // to actually charge cards. Leave as-is to keep the demo (no real charge) flow.
+    const STRIPE_PAYMENT_LINK = ''; // e.g. 'https://buy.stripe.com/xxxxxxxx'
+
+    let selectedPayment = 'Cash on Delivery';
+
+    function renderCheckoutSummary() {
+      const cart = getCart();
+      const summary = document.getElementById('checkoutSummary');
+      const submitBtn = document.querySelector('#checkoutForm button[type="submit"]');
+
+      if (cart.length === 0) {
+        summary.innerHTML = `
+          <div class="empty_state">
+            <ion-icon name="cart-outline"></ion-icon>
+            <p>Your cart is empty.<br>Add items before checking out.</p>
+            <a href="menu.html" class="btn" style="margin-top:20px;">Browse Menu</a>
+          </div>`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+      }
+      if (submitBtn) submitBtn.disabled = false;
+
+      const subtotal = getCartTotal();
+      const delivery = 3.5;
+      const tax = subtotal * 0.05;
+      const total = subtotal + delivery + tax;
+
+      summary.innerHTML = `
+        <h3 style="margin-bottom:20px; font-size:20px;">Order Summary</h3>
+        ${cart.map(c => {
+          const item = getMenuItemById(c.id);
+          if (!item) return '';
+          return `<div class="summary_row"><span>${item.name} × ${c.qty}</span><span>$${(item.price * c.qty).toFixed(2)}</span></div>`;
+        }).join('')}
+        <div class="summary_row"><span>Delivery Fee</span><span>$${delivery.toFixed(2)}</span></div>
+        <div class="summary_row"><span>Tax (5%)</span><span>$${tax.toFixed(2)}</span></div>
+        <div class="summary_row total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCheckoutSummary();
+
+      document.querySelectorAll('.payment_option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.payment_option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          selectedPayment = opt.getAttribute('data-method');
+        });
+      });
+
+      document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (getCart().length === 0) return;
+
+        const fields = [['fg_name', 'custName'], ['fg_email', 'custEmail'], ['fg_phone', 'custPhone'], ['fg_address', 'custAddress']];
+        let valid = true;
+        fields.forEach(([groupId, inputId]) => {
+          const group = document.getElementById(groupId);
+          const input = document.getElementById(inputId);
+          const ok = inputId === 'custEmail'
+            ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)
+            : input.value.trim() !== '';
+          group.classList.toggle('invalid', !ok);
+          if (!ok) valid = false;
+        });
+        if (!valid) return;
+
+        const cart = getCart();
+        const subtotal = getCartTotal();
+        const total = subtotal + 3.5 + subtotal * 0.05;
+
+        const order = {
+          id: 'CH' + Date.now().toString().slice(-6),
+          items: cart.map(c => {
+            const item = getMenuItemById(c.id);
+            return { name: item.name, qty: c.qty, price: item.price };
+          }),
+          total: total.toFixed(2),
+          customer: {
+            name: document.getElementById('custName').value,
+            email: document.getElementById('custEmail').value,
+            phone: document.getElementById('custPhone').value,
+            address: document.getElementById('custAddress').value
+          },
+          payment: selectedPayment,
+          status: 'Pending',
+          eta: '30-40 Minutes',
+          date: new Date().toISOString()
+        };
+
+        const orders = JSON.parse(localStorage.getItem('ch_orders') || '[]');
+        orders.unshift(order);
+        localStorage.setItem('ch_orders', JSON.stringify(orders));
+
+        const itemsList = order.items.map(i => `• ${i.name} ×${i.qty}`).join('\n');
+
+        // 1) Notification to YOUR Gmail — subject configured in EmailJS as "📦 New Order Received - CraveHub"
+        sendMailNotification('Order', {
+          order_id: order.id,
+          customer_name: order.customer.name,
+          customer_email: order.customer.email,
+          phone: order.customer.phone,
+          address: order.customer.address,
+          items_list: itemsList,
+          total: order.total,
+          payment: order.payment,
+          message: `New order ${order.id} — total $${order.total}, payment: ${order.payment}. Deliver to: ${order.customer.address}.`
+        }).catch(() => {});
+
+        // 2) Confirmation email to the CUSTOMER — subject configured in EmailJS as "🎉 Your CraveHub Order is Confirmed!"
+        sendOrderConfirmation({
+          to_email: order.customer.email,
+          customer_name: order.customer.name,
+          order_id: order.id,
+          items_list: itemsList,
+          total: order.total,
+          eta: order.eta
+        }).catch(() => {});
+
+        // Real card payment (optional) — redirects to your Stripe Payment Link
+        if (selectedPayment === 'Card' && STRIPE_PAYMENT_LINK) {
+          window.location.href = `${STRIPE_PAYMENT_LINK}?client_reference_id=${order.id}`;
+          return;
+        }
+
+        document.getElementById('orderPopupText').textContent =
+          `Order ${order.id} confirmed — total $${order.total}, paying via ${order.payment}. Estimated delivery: ${order.eta}. A confirmation email is on its way!`;
+        document.getElementById('orderPopup').classList.add('open');
+
+        // Clear cart
+        localStorage.setItem('ch_cart', '[]');
+        updateCartBadge();
+      });
+    });
+  </script>
+</body>
+</html>

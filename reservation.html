@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book A Table | CraveHub</title>
+<meta name="description" content="Reserve your table at CraveHub online in seconds.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="reservation">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="form_section">
+    <div class="form_card" data-aos="fade-up">
+      <div class="center" style="margin-bottom:30px;">
+        <span class="eyebrow">Reservation</span>
+        <h2 class="section_heading">Book A Table Now</h2>
+      </div>
+      <form id="reservationForm" novalidate>
+        <div class="form_row">
+          <div class="form_group" id="fg_first">
+            <label>First Name*</label>
+            <input type="text" id="firstName" required>
+            <span class="error_msg">Please enter your first name.</span>
+          </div>
+          <div class="form_group" id="fg_last">
+            <label>Last Name*</label>
+            <input type="text" id="lastName" required>
+            <span class="error_msg">Please enter your last name.</span>
+          </div>
+        </div>
+        <div class="form_row">
+          <div class="form_group" id="fg_email">
+            <label>Email*</label>
+            <input type="email" id="email" required>
+            <span class="error_msg">Please enter a valid email.</span>
+          </div>
+          <div class="form_group" id="fg_phone">
+            <label>Phone*</label>
+            <input type="text" id="phone" required>
+            <span class="error_msg">Please enter your phone number.</span>
+          </div>
+        </div>
+        <div class="form_row">
+          <div class="form_group" id="fg_date">
+            <label>Date*</label>
+            <input type="date" id="date" required>
+            <span class="error_msg">Please choose a date.</span>
+          </div>
+          <div class="form_group" id="fg_time">
+            <label>Time*</label>
+            <input type="time" id="time" required>
+            <span class="error_msg">Please choose a time.</span>
+          </div>
+        </div>
+        <div class="form_group" id="fg_guests">
+          <label>How Many Guests*</label>
+          <input type="number" id="guests" min="1" max="20" required>
+          <span class="error_msg">Please enter number of guests (1–20).</span>
+        </div>
+        <button type="submit" class="btn" style="width:100%; justify-content:center; margin-top:10px;">Book Now</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="popup_overlay" id="successPopup">
+    <div class="popup_card">
+      <ion-icon name="checkmark-circle"></ion-icon>
+      <h3>Table Reserved!</h3>
+      <p>Thank you — your reservation request has been received. We'll confirm it by email shortly.</p>
+      <button class="btn" id="popupCloseBtn" style="width:100%; justify-content:center;">Done</button>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    document.getElementById('reservationForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fields = [
+        ['fg_first', 'firstName'], ['fg_last', 'lastName'], ['fg_email', 'email'],
+        ['fg_phone', 'phone'], ['fg_date', 'date'], ['fg_time', 'time'], ['fg_guests', 'guests']
+      ];
+      let valid = true;
+      fields.forEach(([groupId, inputId]) => {
+        const group = document.getElementById(groupId);
+        const input = document.getElementById(inputId);
+        const ok = inputId === 'email'
+          ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)
+          : input.value.trim() !== '';
+        group.classList.toggle('invalid', !ok);
+        if (!ok) valid = false;
+      });
+      if (!valid) return;
+
+      // Save reservation to localStorage history (used on profile page too)
+      const reservationData = {
+        name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        guests: document.getElementById('guests').value,
+        createdAt: new Date().toISOString()
+      };
+      const reservations = JSON.parse(localStorage.getItem('ch_reservations') || '[]');
+      reservations.push(reservationData);
+      localStorage.setItem('ch_reservations', JSON.stringify(reservations));
+
+      // Email notification to restaurant Gmail + auto-reply to guest
+      sendMailNotification('Reservation / Booking', {
+        from_name: reservationData.name,
+        from_email: reservationData.email,
+        phone: reservationData.phone,
+        date: reservationData.date,
+        time: reservationData.time,
+        guests: reservationData.guests,
+        message: `New table reservation for ${reservationData.guests} guest(s) on ${reservationData.date} at ${reservationData.time}.`
+      }).then(() => {
+        sendAutoReply({ from_name: reservationData.name, from_email: reservationData.email });
+      }).catch(() => {});
+
+      document.getElementById('successPopup').classList.add('open');
+      document.getElementById('reservationForm').reset();
+    });
+    document.getElementById('popupCloseBtn').addEventListener('click', () => {
+      document.getElementById('successPopup').classList.remove('open');
+    });
+  </script>
+</body>
+</html>

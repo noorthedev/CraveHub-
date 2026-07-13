@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | CraveHub</title>
+<meta name="description" content="Log in or create your CraveHub account.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="login">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="form_section">
+    <div class="form_card" style="max-width:460px;" data-aos="fade-up">
+      <div class="center" style="margin-bottom:26px;">
+        <span class="eyebrow" id="formModeLabel">Welcome Back</span>
+        <h2 class="section_heading" id="formModeTitle">Log In</h2>
+      </div>
+
+      <p style="font-size:11px; color:var(--text-muted); text-align:center; margin-bottom:20px; line-height:18px;">
+        Demo account system — stored only in this browser (localStorage), not a secure server login.
+      </p>
+
+      <form id="authForm" novalidate>
+        <div class="form_group" id="fg_signupName" style="display:none;">
+          <label>Full Name*</label>
+          <input type="text" id="authName">
+          <span class="error_msg">Please enter your name.</span>
+        </div>
+        <div class="form_group" id="fg_authEmail">
+          <label>Email*</label>
+          <input type="email" id="authEmail" required>
+          <span class="error_msg">Please enter a valid email.</span>
+        </div>
+        <div class="form_group" id="fg_authPass">
+          <label>Password*</label>
+          <input type="password" id="authPass" required>
+          <span class="error_msg">Password must be at least 4 characters.</span>
+        </div>
+        <button type="submit" class="btn" style="width:100%; justify-content:center;" id="authSubmitBtn">Log In</button>
+      </form>
+
+      <p style="text-align:center; font-size:13px; margin-top:20px; color:var(--text-muted);">
+        <span id="toggleText">Don't have an account?</span>
+        <a href="#" id="toggleModeBtn" style="color:var(--gold); font-weight:600;">Sign Up</a>
+      </p>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    let mode = 'login'; // or 'signup'
+
+    document.getElementById('toggleModeBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      mode = mode === 'login' ? 'signup' : 'login';
+      const isSignup = mode === 'signup';
+      document.getElementById('formModeLabel').textContent = isSignup ? 'Join CraveHub' : 'Welcome Back';
+      document.getElementById('formModeTitle').textContent = isSignup ? 'Sign Up' : 'Log In';
+      document.getElementById('fg_signupName').style.display = isSignup ? 'block' : 'none';
+      document.getElementById('authSubmitBtn').textContent = isSignup ? 'Create Account' : 'Log In';
+      document.getElementById('toggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+      document.getElementById('toggleModeBtn').textContent = isSignup ? 'Log In' : 'Sign Up';
+    });
+
+    document.getElementById('authForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPass').value;
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const passOk = pass.length >= 4;
+
+      document.getElementById('fg_authEmail').classList.toggle('invalid', !emailOk);
+      document.getElementById('fg_authPass').classList.toggle('invalid', !passOk);
+      if (!emailOk || !passOk) return;
+
+      const users = JSON.parse(localStorage.getItem('ch_users') || '{}');
+
+      if (mode === 'signup') {
+        const name = document.getElementById('authName').value.trim();
+        const nameOk = name !== '';
+        document.getElementById('fg_signupName').classList.toggle('invalid', !nameOk);
+        if (!nameOk) return;
+
+        users[email] = { name, email, pass };
+        localStorage.setItem('ch_users', JSON.stringify(users));
+        localStorage.setItem('ch_user', JSON.stringify({ name, email }));
+        window.location.href = 'profile.html';
+      } else {
+        const user = users[email];
+        if (!user || user.pass !== pass) {
+          alert('No matching account found, or password incorrect. Try Sign Up if you\'re new.');
+          return;
+        }
+        localStorage.setItem('ch_user', JSON.stringify({ name: user.name, email: user.email }));
+        window.location.href = 'profile.html';
+      }
+    });
+  </script>
+</body>
+</html>

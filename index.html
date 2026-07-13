@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraveHub | Crave It. Order It. Love It.</title>
+<meta name="description" content="CraveHub — order wood-fired pizza, gourmet burgers, fresh pasta and crispy fries online. Fast delivery, fresh ingredients, unforgettable flavor.">
+<meta property="og:title" content="CraveHub — Crave It. Order It. Love It.">
+<meta property="og:description" content="Order your favorite pizza, burgers, pasta and fries online from CraveHub.">
+<meta property="og:type" content="website">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="home">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="hero">
+    <div class="hero_content" data-aos="fade-right">
+      <span class="eyebrow">Delivered Fresh, Daily</span>
+      <h1>Crave It. <span>Order It.</span><br>Love It.</h1>
+      <p>Wood-fired pizzas, gourmet burgers, silky pastas and golden fries — crafted fresh and delivered fast, right to your door.</p>
+      <div class="hero_actions">
+        <a href="menu.html" class="btn">Order Now <ion-icon name="arrow-forward"></ion-icon></a>
+        <a href="reservation.html" class="btn outline">Book A Table</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="promo_cards">
+    <div class="promo_card" data-aos="fade-up">
+      <div class="img"><img src="img/m6.png" alt="Burger Monday"></div>
+      <div class="order_details">
+        <h4>Burger Monday</h4>
+        <p class="price"><span>20%</span> Off</p>
+        <a href="menu.html" class="btn" style="padding:8px 20px;">Order Now <ion-icon name="cart"></ion-icon></a>
+      </div>
+    </div>
+    <div class="promo_card" data-aos="fade-up" data-aos-delay="100">
+      <div class="img"><img src="img/m15.png" alt="Pizza Friday"></div>
+      <div class="order_details">
+        <h4>Pizza Friday</h4>
+        <p class="price"><span>15%</span> Off</p>
+        <a href="menu.html" class="btn" style="padding:8px 20px;">Order Now <ion-icon name="cart"></ion-icon></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu_section">
+    <div class="center" data-aos="fade-up">
+      <span class="eyebrow">Popular Picks</span>
+      <h2 class="section_heading">Crowd Favorites</h2>
+      <hr class="section_divider">
+    </div>
+    <div class="food_grid" id="featuredGrid"></div>
+  </section>
+
+  <section class="poster">
+    <div class="poster_img" data-aos="fade-right">
+      <img src="img/m8.png" alt="CraveHub kitchen">
+    </div>
+    <div class="poster_details" data-aos="fade-left">
+      <span class="eyebrow">Our Story</span>
+      <h2 class="section_heading">We Are CraveHub</h2>
+      <p>Born from a love of honest, flavor-first cooking, CraveHub brings together the best of wood-fired pizza, hand-tossed pasta and gourmet burgers under one roof — made fresh, every single order.</p>
+      <p>No shortcuts, no compromises. Just real ingredients, real recipes, and real cravings satisfied.</p>
+      <a href="about.html" class="btn outline">Read Our Story</a>
+    </div>
+  </section>
+
+  <section class="menu_section" style="padding-top:0;">
+    <div class="center" data-aos="fade-up">
+      <span class="eyebrow">Testimonials</span>
+      <h2 class="section_heading">What Our Guests Say</h2>
+      <hr class="section_divider">
+    </div>
+    <div class="food_grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="promo_card" data-aos="zoom-in" style="flex-direction:column; align-items:flex-start; text-align:left;">
+        <img src="img/quote.png" alt="" style="width:32px; margin-bottom:10px;">
+        <p style="font-size:13px; color:var(--text-muted); line-height:22px; margin-bottom:14px;">Ordered the Margherita Suprema and it was the best pizza I've had delivered — fresh, hot, and full of flavor.</p>
+        <h4 style="font-size:15px;">Aisha K.</h4>
+      </div>
+      <div class="promo_card" data-aos="zoom-in" data-aos-delay="100" style="flex-direction:column; align-items:flex-start; text-align:left;">
+        <img src="img/quote.png" alt="" style="width:32px; margin-bottom:10px;">
+        <p style="font-size:13px; color:var(--text-muted); line-height:22px; margin-bottom:14px;">The Roma Burger is unreal. Fast delivery too — arrived still warm. Definitely ordering again this week.</p>
+        <h4 style="font-size:15px;">Hamza R.</h4>
+      </div>
+      <div class="promo_card" data-aos="zoom-in" data-aos-delay="200" style="flex-direction:column; align-items:flex-start; text-align:left;">
+        <img src="img/quote.png" alt="" style="width:32px; margin-bottom:10px;">
+        <p style="font-size:13px; color:var(--text-muted); line-height:22px; margin-bottom:14px;">Penne Arrabbiata has real heat and real flavor. Finally a place that doesn't go easy on the spice.</p>
+        <h4 style="font-size:15px;">Sara M.</h4>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    // ---- Home page: render featured items ----
+    function renderFeatured(){
+      const grid = document.getElementById('featuredGrid');
+      const picks = MENU_DATA.slice(0, 6);
+      grid.innerHTML = picks.map(item => renderFoodCard(item)).join('');
+      wireFoodCardEvents();
+    }
+    document.addEventListener('DOMContentLoaded', renderFeatured);
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | CraveHub</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<style>
+  body{ background: var(--bg); }
+  .admin_wrap{ max-width:1100px; margin:0 auto; padding:50px 6% 100px; }
+  .admin_gate{ max-width:380px; margin:120px auto; text-align:center; }
+  .admin_gate input{ width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); margin:16px 0; outline:none; }
+  .stat_cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:40px; }
+  .stat_card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; text-align:center; }
+  .stat_card h3{ font-size:28px; color:var(--gold); font-family:'Fraunces'; font-style:italic; }
+  .stat_card span{ font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+  table{ width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:40px; }
+  th, td{ padding:12px 14px; text-align:left; font-size:13px; border-bottom:1px solid var(--border); }
+  th{ color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+  select{ background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:6px 8px; font-size:12px; }
+  .tab_row{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+  .tab_btn{ padding:8px 18px; border-radius:20px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; font-size:13px; }
+  .tab_btn.active{ background:var(--gold); color:#17130a; border-color:var(--gold); }
+  .tab_panel{ display:none; }
+  .tab_panel.active{ display:block; }
+  @media(max-width:800px){ .stat_cards{ grid-template-columns:repeat(2,1fr); } table{ font-size:11px; } th,td{ padding:8px; } }
+</style>
+</head>
+<body data-page="admin">
+
+  <div id="adminGate" class="admin_gate">
+    <ion-icon name="shield-checkmark-outline" style="font-size:44px; color:var(--gold);"></ion-icon>
+    <h2 style="margin:14px 0 6px;">Admin Access</h2>
+    <p style="font-size:12px; color:var(--text-muted); line-height:18px;">
+      Client-side password only — NOT secure for a real production dashboard.<br>
+      For real admin security, this page needs a backend with proper authentication.
+    </p>
+    <input type="password" id="adminPass" placeholder="Enter admin password">
+    <button class="btn" id="adminLoginBtn" style="width:100%; justify-content:center;">Enter Dashboard</button>
+    <p id="adminGateError" style="color:#e2626f; font-size:12px; margin-top:10px;"></p>
+    <p style="font-size:11px; color:var(--text-muted); margin-top:16px;">Default password: <code>admin123</code> — change it in js/admin.js</p>
+  </div>
+
+  <div class="admin_wrap" id="adminContent" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+      <h2 style="font-size:26px;">CraveHub — Admin Dashboard</h2>
+      <button class="btn outline" id="adminLogoutBtn">Log Out</button>
+    </div>
+
+    <div class="stat_cards">
+      <div class="stat_card"><h3 id="statOrders">0</h3><span>Total Orders</span></div>
+      <div class="stat_card"><h3 id="statReservations">0</h3><span>Reservations</span></div>
+      <div class="stat_card"><h3 id="statMessages">0</h3><span>Contact Messages</span></div>
+      <div class="stat_card"><h3 id="statSubs">0</h3><span>Newsletter Subs</span></div>
+    </div>
+
+    <div class="tab_row">
+      <button class="tab_btn active" data-tab="orders">Orders</button>
+      <button class="tab_btn" data-tab="reservations">Reservations</button>
+      <button class="tab_btn" data-tab="messages">Messages</button>
+      <button class="tab_btn" data-tab="subs">Newsletter</button>
+    </div>
+
+    <div class="tab_panel active" id="panel-orders">
+      <table>
+        <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </div>
+    <div class="tab_panel" id="panel-reservations">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Date</th><th>Time</th><th>Guests</th></tr></thead>
+        <tbody id="reservationsTableBody"></tbody>
+      </table>
+    </div>
+    <div class="tab_panel" id="panel-messages">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th></tr></thead>
+        <tbody id="messagesTableBody"></tbody>
+      </table>
+    </div>
+    <div class="tab_panel" id="panel-subs">
+      <table>
+        <thead><tr><th>Email</th></tr></thead>
+        <tbody id="subsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

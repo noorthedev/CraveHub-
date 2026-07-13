@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us | CraveHub</title>
+<meta name="description" content="Learn the story behind CraveHub — honest, flavor-first cooking made fresh every day.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="about">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="poster">
+    <div class="poster_img" data-aos="fade-right">
+      <img src="img/m8.png" alt="Inside the CraveHub kitchen">
+    </div>
+    <div class="poster_details" data-aos="fade-left">
+      <span class="eyebrow">Our Story</span>
+      <h2 class="section_heading">We Are CraveHub</h2>
+      <p>CraveHub started as a single kitchen with one rule: never cut corners. What began as a small pizza counter grew into a full menu of wood-fired pizzas, gourmet burgers, silky pastas and golden fries — all made from scratch, every single day.</p>
+      <p>We believe good food shouldn't be complicated. Real ingredients, honest recipes, and a kitchen that treats every order like it's the only one that matters.</p>
+      <div class="stat_row">
+        <div class="stat"><h3>12+</h3><span>Years Serving</span></div>
+        <div class="stat"><h3>4.7</h3><span>Average Rating</span></div>
+        <div class="stat"><h3>50k+</h3><span>Orders Delivered</span></div>
+      </div>
+      <a href="menu.html" class="btn">Explore Our Menu</a>
+    </div>
+  </section>
+
+  <section class="menu_section">
+    <div class="center" data-aos="fade-up">
+      <span class="eyebrow">What Drives Us</span>
+      <h2 class="section_heading">Our Values</h2>
+      <hr class="section_divider">
+    </div>
+    <div class="food_grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="promo_card" data-aos="fade-up" style="flex-direction:column; text-align:center; align-items:center;">
+        <ion-icon name="leaf" style="font-size:36px; color:var(--gold); margin-bottom:14px;"></ion-icon>
+        <h4>Fresh Ingredients</h4>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Sourced daily, never frozen, never rushed.</p>
+      </div>
+      <div class="promo_card" data-aos="fade-up" data-aos-delay="100" style="flex-direction:column; text-align:center; align-items:center;">
+        <ion-icon name="flame" style="font-size:36px; color:var(--gold); margin-bottom:14px;"></ion-icon>
+        <h4>Made From Scratch</h4>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Dough, sauce, and sides — all handmade in-house.</p>
+      </div>
+      <div class="promo_card" data-aos="fade-up" data-aos-delay="200" style="flex-direction:column; text-align:center; align-items:center;">
+        <ion-icon name="bicycle" style="font-size:36px; color:var(--gold); margin-bottom:14px;"></ion-icon>
+        <h4>Fast, Fresh Delivery</h4>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Hot food, on time, every time.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+</body>
+</html>

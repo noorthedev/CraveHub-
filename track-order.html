@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Your Order | CraveHub</title>
+<meta name="description" content="Track the status of your CraveHub order.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  .track_steps{ display:flex; justify-content:space-between; margin:36px 0; position:relative; }
+  .track_steps::before{ content:''; position:absolute; top:18px; left:0; right:0; height:2px; background:var(--border); z-index:0; }
+  .track_step{ position:relative; z-index:1; text-align:center; flex:1; }
+  .track_step .dot{ width:36px; height:36px; border-radius:50%; background:var(--surface-2); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:16px; color:var(--text-muted); }
+  .track_step.done .dot{ background:var(--gold); border-color:var(--gold); color:#17130a; }
+  .track_step span{ font-size:12px; color:var(--text-muted); }
+  .track_step.done span{ color:var(--text); font-weight:600; }
+</style>
+</head>
+<body data-page="track-order">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="form_section">
+    <div class="form_card" data-aos="fade-up">
+      <div class="center" style="margin-bottom:26px;">
+        <span class="eyebrow">Order Status</span>
+        <h2 class="section_heading">Track Your Order</h2>
+      </div>
+      <p style="font-size:11px; color:var(--text-muted); text-align:center; margin-bottom:22px; line-height:18px;">
+        Works for orders placed in this browser. A real multi-device tracker needs a backend/database.
+      </p>
+      <div class="form_group">
+        <label>Order ID*</label>
+        <input type="text" id="orderIdInput" placeholder="e.g. CH245811">
+      </div>
+      <button class="btn" id="trackBtn" style="width:100%; justify-content:center;">Track Order</button>
+
+      <div id="trackResult" style="margin-top:30px; display:none;">
+        <div class="track_steps" id="trackSteps"></div>
+        <div class="order_summary" id="trackDetails" style="margin-top:20px;"></div>
+      </div>
+      <div id="trackNotFound" style="display:none; text-align:center; margin-top:24px; color:var(--text-muted);">
+        <ion-icon name="alert-circle-outline" style="font-size:40px; color:var(--gold);"></ion-icon>
+        <p style="margin-top:10px;">No order found with that ID in this browser.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    const STATUS_STEPS = ['Pending', 'Preparing', 'Out for Delivery', 'Delivered'];
+
+    function trackOrder() {
+      const id = document.getElementById('orderIdInput').value.trim();
+      const orders = JSON.parse(localStorage.getItem('ch_orders') || '[]');
+      const order = orders.find(o => o.id === id);
+
+      document.getElementById('trackResult').style.display = 'none';
+      document.getElementById('trackNotFound').style.display = 'none';
+
+      if (!order) {
+        document.getElementById('trackNotFound').style.display = 'block';
+        return;
+      }
+
+      const currentIdx = STATUS_STEPS.indexOf(order.status || 'Pending');
+      document.getElementById('trackSteps').innerHTML = STATUS_STEPS.map((step, i) => `
+        <div class="track_step ${i <= currentIdx ? 'done' : ''}">
+          <div class="dot"><ion-icon name="${i <= currentIdx ? 'checkmark' : 'ellipse-outline'}"></ion-icon></div>
+          <span>${step}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('trackDetails').innerHTML = `
+        <div class="summary_row"><span>Order ID</span><span>${order.id}</span></div>
+        <div class="summary_row"><span>Placed On</span><span>${new Date(order.date).toLocaleString()}</span></div>
+        <div class="summary_row"><span>Payment</span><span>${order.payment}</span></div>
+        <div class="summary_row total"><span>Total</span><span>$${order.total}</span></div>
+      `;
+      document.getElementById('trackResult').style.display = 'block';
+    }
+
+    document.getElementById('trackBtn').addEventListener('click', trackOrder);
+    document.getElementById('orderIdInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') trackOrder();
+    });
+
+    // Auto-fill from ?id= query (e.g. linked from order success popup)
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (id) {
+        document.getElementById('orderIdInput').value = id;
+        trackOrder();
+      }
+    });
+  </script>
+</body>
+</html>

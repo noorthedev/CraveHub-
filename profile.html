@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile | CraveHub</title>
+<meta name="description" content="Your CraveHub account, order history and reservations.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<style>
+  .profile_wrap{ padding:60px 8% 100px; max-width:900px; margin:0 auto; }
+  .profile_head{ display:flex; align-items:center; gap:20px; margin-bottom:40px; }
+  .profile_head ion-icon{ font-size:64px; color:var(--gold); }
+  .order_card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 24px; margin-bottom:16px; }
+  .order_card_head{ display:flex; justify-content:space-between; font-size:14px; margin-bottom:10px; color:var(--text-muted); }
+  .order_card_head strong{ color:var(--text); }
+  .order_line{ display:flex; justify-content:space-between; font-size:13px; padding:4px 0; color:var(--text-muted); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="profile">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <div class="profile_wrap">
+    <div id="notLoggedIn" style="display:none; text-align:center; padding:60px 0;">
+      <ion-icon name="lock-closed-outline" style="font-size:50px; color:var(--gold); margin-bottom:16px;"></ion-icon>
+      <h3 style="margin-bottom:10px;">You're not logged in</h3>
+      <p style="color:var(--text-muted); margin-bottom:24px;">Log in to view your profile and order history.</p>
+      <a href="login.html" class="btn">Log In</a>
+    </div>
+
+    <div id="profileContent" style="display:none;">
+      <div class="profile_head" data-aos="fade-up">
+        <ion-icon name="person-circle"></ion-icon>
+        <div>
+          <h2 id="profileName" style="font-size:26px;"></h2>
+          <p id="profileEmail" style="color:var(--text-muted); font-size:14px;"></p>
+        </div>
+        <button class="btn outline" id="logoutBtn" style="margin-left:auto;">Log Out</button>
+      </div>
+
+      <h3 style="margin-bottom:16px;" data-aos="fade-up">Order History</h3>
+      <div id="ordersList" data-aos="fade-up"></div>
+
+      <h3 style="margin:36px 0 16px;" data-aos="fade-up">Reservation History</h3>
+      <div id="reservationsList" data-aos="fade-up"></div>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('ch_user') || 'null');
+      if (!user) {
+        document.getElementById('notLoggedIn').style.display = 'block';
+        return;
+      }
+      document.getElementById('profileContent').style.display = 'block';
+      document.getElementById('profileName').textContent = user.name;
+      document.getElementById('profileEmail').textContent = user.email;
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('ch_user');
+        window.location.href = 'index.html';
+      });
+
+      const orders = JSON.parse(localStorage.getItem('ch_orders') || '[]');
+      const ordersList = document.getElementById('ordersList');
+      ordersList.innerHTML = orders.length === 0
+        ? `<div class="empty_state"><ion-icon name="receipt-outline"></ion-icon><p>No orders yet.</p></div>`
+        : orders.map(o => `
+            <div class="order_card">
+              <div class="order_card_head">
+                <strong>${o.id}</strong>
+                <span>${new Date(o.date).toLocaleString()}</span>
+              </div>
+              <div class="order_line"><span>Status</span><span style="color:var(--gold); font-weight:600;">${o.status || 'Pending'}</span></div>
+              ${o.items.map(i => `<div class="order_line"><span>${i.name} × ${i.qty}</span><span>$${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+              <div class="order_line" style="font-weight:600; color:var(--text); border-top:1px solid var(--border); margin-top:8px; padding-top:8px;">
+                <span>Total (${o.payment})</span><span>$${o.total}</span>
+              </div>
+            </div>`).join('');
+
+      const reservations = JSON.parse(localStorage.getItem('ch_reservations') || '[]');
+      const resList = document.getElementById('reservationsList');
+      resList.innerHTML = reservations.length === 0
+        ? `<div class="empty_state"><ion-icon name="calendar-outline"></ion-icon><p>No reservations yet.</p></div>`
+        : reservations.map(r => `
+            <div class="order_card">
+              <div class="order_card_head"><strong>${r.name}</strong><span>${new Date(r.createdAt).toLocaleString()}</span></div>
+              <div class="order_line"><span>Date & Time</span><span>${r.date} at ${r.time}</span></div>
+              <div class="order_line"><span>Guests</span><span>${r.guests}</span></div>
+            </div>`).join('');
+    });
+  </script>
+</body>
+</html>

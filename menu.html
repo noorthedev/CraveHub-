@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Menu | CraveHub</title>
+<meta name="description" content="Browse CraveHub's full menu — pizza, burgers, pasta and fries. Search, filter and add your favorites to cart instantly.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="menu">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="menu_section">
+    <div class="center" data-aos="fade-up">
+      <span class="eyebrow">La Nostra Cucina</span>
+      <h2 class="section_heading">Our Full Menu</h2>
+      <hr class="section_divider">
+    </div>
+
+    <div class="menu_filters" data-aos="fade-up">
+      <button class="filter_btn active" data-filter="All">All</button>
+      <button class="filter_btn" data-filter="Pizza">Pizza</button>
+      <button class="filter_btn" data-filter="Burger">Burger</button>
+      <button class="filter_btn" data-filter="Pasta">Pasta</button>
+      <button class="filter_btn" data-filter="Fries">Fries</button>
+      <button class="filter_btn" data-filter="Grill">Grill</button>
+      <button class="filter_btn" data-filter="Wraps">Wraps</button>
+    </div>
+
+    <div class="food_grid" id="menuGrid"></div>
+    <div class="no_results" id="noResults">
+      <ion-icon name="search"></ion-icon>
+      <p>No dishes found. Try a different search or category.</p>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    let activeFilter = 'All';
+    let activeQuery = '';
+
+    function renderMenuGrid() {
+      const grid = document.getElementById('menuGrid');
+      const noResults = document.getElementById('noResults');
+      let items = MENU_DATA;
+      if (activeFilter !== 'All') items = items.filter(i => i.category === activeFilter);
+      if (activeQuery.trim()) {
+        const q = activeQuery.trim().toLowerCase();
+        items = items.filter(i => i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q));
+      }
+      if (items.length === 0) {
+        grid.innerHTML = '';
+        noResults.classList.add('show');
+      } else {
+        noResults.classList.remove('show');
+        grid.innerHTML = items.map(renderFoodCard).join('');
+        wireFoodCardEvents();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Category filters
+      document.querySelectorAll('.filter_btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter_btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter');
+          renderMenuGrid();
+        });
+      });
+
+      // Pre-fill from ?q= query param (came from header quick search)
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) activeQuery = q;
+
+      renderMenuGrid();
+
+      // Live search — hook into the header's search input once it's rendered
+      setTimeout(() => {
+        const searchInput = document.getElementById('quickSearch');
+        if (searchInput) {
+          searchInput.addEventListener('input', () => {
+            activeQuery = searchInput.value;
+            renderMenuGrid();
+          });
+        }
+      }, 0);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery | CraveHub</title>
+<meta name="description" content="A look inside CraveHub's kitchen and dishes.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ch_theme') || 'dark');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<style>
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:2000; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all .3s ease; }
+  .lightbox.open{ opacity:1; visibility:visible; }
+  .lightbox img{ max-width:80vw; max-height:80vh; border-radius:10px; }
+  .lightbox_close{ position:absolute; top:30px; right:40px; font-size:34px; color:#fff; cursor:pointer; background:none; border:none; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body data-page="gallery">
+
+  <div id="loader">
+    <div class="loader_logo"><ion-icon name="restaurant"></ion-icon> CraveHub</div>
+    <div class="loader_bar"></div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <section class="menu_section">
+    <div class="center" data-aos="fade-up">
+      <span class="eyebrow">A Peek Inside</span>
+      <h2 class="section_heading">Our Gallery</h2>
+      <hr class="section_divider">
+    </div>
+    <div class="gallery_grid" id="galleryGrid"></div>
+  </section>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox_close" id="lightboxClose">&times;</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <div id="site-footer"></div>
+  <div class="scroll_top" id="scrollTopBtn"><ion-icon name="arrow-up"></ion-icon></div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mailer.js"></script>
+  <script>
+    const galleryImages = MENU_DATA.map(i => i.image).concat(['img/o1.jpg', 'img/o2.jpg', 'img/m8.png']);
+    document.getElementById('galleryGrid').innerHTML = galleryImages.map((src, i) =>
+      `<img src="${src}" alt="CraveHub dish" data-aos="zoom-in" data-aos-delay="${(i % 4) * 60}">`
+    ).join('');
+
+    document.querySelectorAll('.gallery_grid img').forEach(img => {
+      img.addEventListener('click', () => {
+        document.getElementById('lightboxImg').src = img.src;
+        document.getElementById('lightbox').classList.add('open');
+      });
+    });
+    document.getElementById('lightboxClose').addEventListener('click', () => {
+      document.getElementById('lightbox').classList.remove('open');
+    });
+    document.getElementById('lightbox').addEventListener('click', (e) => {
+      if (e.target.id === 'lightbox') e.target.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
