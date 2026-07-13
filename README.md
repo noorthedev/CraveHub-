@@ -40,6 +40,7 @@ This project was built to enhance frontend development skills by implementing re
 Anum Rajput
 
 GitHub: https://github.com/noorthedev
+
 LinkedIn: https://www.linkedin.com/in/anum-rajput-1a080632a
 
 
