@@ -28,11 +28,12 @@ This project was built to enhance frontend development skills by implementing re
 
 📸 Preview
 
-Add screenshots of your website here.
+<img width="1860" height="855" alt="image" src="https://github.com/user-attachments/assets/18dc06dc-081a-4dc5-bfad-e84a5283b505" />
+
 
 🚀 Live Demo
 
-Add your live website link here.
+[Add your live website link here.](https://crave-hub-x8tr.vercel.app/)
 
 👩‍💻 Author
 
